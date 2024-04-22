@@ -66,6 +66,34 @@ def create_address(address: Address):
         print(f"Error creating address: {e}")
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal server error")
 
+# Update an existing address
+@app.put("/addresses/{address_id}")
+def update_address(address_id: int, address: Address):
+    # Validate coordinates
+    if not (-90 <= address.latitude <= 90) or not (-180 <= address.longitude <= 180):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid coordinates")
+
+    try:
+        res = db.update_address(address_id, address)
+        if res == 0:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Address id not found")
+        return {"message": "Address updated successfully"}
+    except sqlite3.Error as e:
+        print(f"Error updating address: {e}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail= "Internal Server Error")
+    
+# Update an existing address
+@app.delete("/deleteAddress/{address_id}")
+def delete_address(address_id: int):
+    try:
+        res = db.delete_address(address_id)
+        print("delete result: ", res)
+        if res == 0:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Address id not found")
+        return {"message": "Address deleted successfully!"}
+    except sqlite3.Error as e:
+        print(f"Error deleting address: {e}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail= "Internal Server Error")
 
 # api to calculate distance between two coordinates
 @app.post("/getAddressesByDistance")

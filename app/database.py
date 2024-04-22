@@ -59,6 +59,27 @@ class database():
         self.conn.close()
         return data
     
+    def update_address(self, address_id, address):
+        self.conn = sqlite3.connect(self.path)
+        self.cur = self.conn.cursor()
+
+        res = self.cur.execute(f"UPDATE addresses SET name = '{address.name}', street = '{address.street}', city = '{address.city}', state = '{address.state}', zip = '{address.zip}', latitude = {address.latitude}, longitude = {address.longitude} WHERE id = {address_id}",)
+        count = res.rowcount
+        
+        self.conn.commit()
+        self.conn.close()
+        return count
+    
+    def delete_address(self, address_id):
+        self.conn = sqlite3.connect(self.path)
+        self.cur = self.conn.cursor()
+        res = self.cur.execute(f"DELETE FROM Addresses WHERE id= {address_id}")
+        count = res.rowcount
+
+        self.conn.commit()
+        self.conn.close()
+        return count
+    
     def get_lat_lon_list(self):
         self.conn = sqlite3.connect(self.path)
         self.cur = self.conn.cursor()
